@@ -1,6 +1,7 @@
-import NextAuth, { User } from "next-auth"
+import NextAuth, { Awaitable, User, Session } from "next-auth"
 import CredentialsProvider from "next-auth/providers/credentials"
 import { authorizeUser } from "@/src/db/database"
+import { JWT } from "next-auth/jwt"
 
 export const authOptions = {
   providers: [
@@ -33,6 +34,12 @@ export const authOptions = {
       }
     })
   ],
+
+  callbacks: {
+    async session({ session, token, user }: {session: Session, token: JWT, user: User}): Promise<Session> {
+      return session
+    }
+  },
 
   pages: {
     signIn: '/login'

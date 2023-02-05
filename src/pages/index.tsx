@@ -1,19 +1,16 @@
-import { Toolbar, Box, Avatar, List, ListItem, ListItemText, ListItemButton, ListItemAvatar, Typography, Divider, Stack, AppBar, ButtonGroup, Button, IconButton, Icon, TextField, FormControl, Input, InputAdornment } from '@mui/material'
+import { Box, Avatar, List, ListItem, ListItemText, ListItemButton, ListItemAvatar, Typography, Stack, IconButton, FormControl, Input, InputAdornment } from '@mui/material'
 import Head from 'next/head'
 import ChatIcon from '@mui/icons-material/Chat'
 import SearchIcon from '@mui/icons-material/Search'
-import { useEffect, useRef, useState } from 'react'
+import { useState } from 'react'
 import { useSession, signOut } from 'next-auth/react'
+import { getServerSession } from 'next-auth'
+import { authOptions } from './api/auth/[...nextauth]'
+import { GetServerSideProps } from 'next'
 
 export default function Home() {
   const [sidebarOpen, setSidebarOpen] = useState(true)
-  const { data: session, status } = useSession({
-    required: true
-  })
-
-  if (status !== "authenticated") {
-    return
-  }
+  const { data: session, status } = useSession()
 
   return (
     <>
@@ -73,4 +70,21 @@ export default function Home() {
       </main>
     </>
   )
+}
+
+export const getServerSideProps: GetServerSideProps = async (ctx) => {
+  const session = await getServerSession(ctx.req, ctx.res, authOptions)
+
+  if (!session) {
+    return {
+      redirect: {
+        destination: '/login'
+      },
+      props: {}
+    }
+  }
+
+  return {
+    props: {}
+  }
 }
