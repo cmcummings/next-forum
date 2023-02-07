@@ -8,7 +8,7 @@ export default function Document() {
         <meta name="description" content="warechat" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <body>
+      <body className="dark:bg-slate-800 dark:text-white">
         <Main />
         <NextScript />
       </body>

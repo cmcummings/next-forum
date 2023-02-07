@@ -7,29 +7,34 @@ CREATE TABLE Users (
     PRIMARY KEY (user_id)
 );
 
-CREATE TABLE Chatroom (
-    chatroom_id SERIAL,
-    chatroom_name VARCHAR(50),
+CREATE TABLE Forum (
+    forum_id SERIAL,
+    forum_name VARCHAR(30) UNIQUE NOT NULL,
+    forum_description TEXT,
     date_created DATE DEFAULT CURRENT_DATE NOT NULL,
-    PRIMARY KEY (chatroom_id)
+    PRIMARY KEY (forum_id)
 );
 
-CREATE TABLE Message (
-    message_id SERIAL,
-    user_id SERIAL,
-    chatroom_id SERIAL,
-    content TEXT,
-    time_posted TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    PRIMARY KEY (message_id),
-    FOREIGN KEY (user_id) REFERENCES Users (user_id),
-    FOREIGN KEY (chatroom_id) REFERENCES Chatroom (chatroom_id)
+CREATE TABLE Topic (
+    topic_id SERIAL,
+    forum_id SERIAL,
+    topic_name VARCHAR(50) NOT NULL,
+    topic_description TEXT,
+    PRIMARY KEY (topic_id),
+    FOREIGN KEY (forum_id) REFERENCES Forum(forum_id)
 );
 
-CREATE TABLE User_In_Chatroom (
+CREATE TABLE Post (
+    post_id SERIAL,
+    forum_id SERIAL,
+    topic_id SERIAL,
     user_id SERIAL,
-    chatroom_id SERIAL,
-    date_joined DATE DEFAULT CURRENT_DATE NOT NULL,
-    is_owner BOOLEAN,
-    FOREIGN KEY (user_id) REFERENCES Users (user_id),
-    FOREIGN KEY (chatroom_id) REFERENCES Chatroom (chatroom_id)
+    content TEXT NOT NULL,
+    timestamp_posted TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    original_post_id SERIAL,
+    reply_post_id SERIAL,
+    PRIMARY KEY (post_id),
+    FOREIGN KEY (user_id) REFERENCES Users(user_id),
+    FOREIGN KEY (original_post_id) REFERENCES Post(post_id),
+    FOREIGN KEY (reply_post_id) REFERENCES Post(post_id)
 );

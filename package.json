@@ -11,7 +11,13 @@
   "dependencies": {
     "@fontsource/roboto": "^4.5.8",
     "@next/font": "13.1.6",
+    "@tanstack/react-query": "^4.24.4",
+    "@trpc/client": "^10.10.0",
+    "@trpc/next": "^10.10.0",
+    "@trpc/react-query": "^10.10.0",
+    "@trpc/server": "^10.10.0",
     "@types/node": "18.11.18",
+    "@types/pg": "^8.6.6",
     "@types/react": "18.0.27",
     "@types/react-dom": "18.0.10",
     "eslint": "8.33.0",
@@ -22,7 +28,8 @@
     "pg": "^8.9.0",
     "react": "18.2.0",
     "react-dom": "18.2.0",
-    "typescript": "4.9.5"
+    "typescript": "4.9.5",
+    "zod": "^3.20.2"
   },
   "devDependencies": {
     "autoprefixer": "^10.4.13",

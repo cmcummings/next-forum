@@ -1,24 +1,20 @@
 import Head from 'next/head'
-import { useSession, signOut } from 'next-auth/react'
 import { getServerSession } from 'next-auth'
 import { authOptions } from './api/auth/[...nextauth]'
 import { GetServerSideProps, GetServerSidePropsContext } from 'next'
+import { useState } from 'react'
+import Topbar from '../components/Topbar'
+import Home from '../components/Home'
 
-export default function Home() {
-  const { data: session, status } = useSession()
-
-  if (!session) return
-
+export default function Index() {
   return (
     <>
       <Head>
-        <title>ware-chat</title>
+        <title>ware</title>
       </Head>
       <main>
-        <h1 className="font-bold">You're logged in!</h1>
-        <p>{session.user.name}</p>
-        <p>{session.user.email}</p>
-        <button onClick={() => signOut()}>Sign Out</button>
+        <Topbar />
+        <Home />
       </main>
     </>
   )
