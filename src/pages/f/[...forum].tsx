@@ -1,14 +1,15 @@
 import Topbar from "@/src/components/Topbar"
 import { getForum } from "@/src/db/database"
-import { serializeForum } from "@/src/serialize"
-import { Forum, Topic } from "@/types/app-types"
+import { Forum, Post, Topic } from "@/types/app-types"
 import { GetServerSideProps, GetServerSidePropsContext } from "next"
-import { useRouter } from "next/router"
 
-export default function ForumPage({ forum }: { forum: Forum }) {
-  const router = useRouter()
-  const { forumName } = router.query
+interface ForumProps {
+  forum: Forum,
+  topic?: Topic,
+  post?: Post
+}
 
+export default function ForumPage({ forum, topic, post }: ForumProps) {
   return (
     <>
       <Topbar />
@@ -33,29 +34,35 @@ export default function ForumPage({ forum }: { forum: Forum }) {
   )
 }
 
-
 export const getServerSideProps: GetServerSideProps = async (ctx: GetServerSidePropsContext) => {
-  if (!ctx.params || !ctx.params.forumName) {
+  if (!ctx.params || !ctx.params.forum) {
     return {
       redirect: '/',
       props: {}
     }
   }
 
+  // /f/[forumName]/[topicId]/[postId]
+
   try {
-    if(typeof ctx.params.forumName === 'string') {
-      const forum = await getForum(ctx.params.forumName)
-      serializeForum(forum)
+    if(typeof ctx.params.forum !== 'string') {
+      const forum = await getForum(ctx.params.forum[0])
       
-      return {
-        props: {
-          forum: forum
-        }
+      const props: ForumProps = {
+        forum: forum
       }
-    } else {
-      return { notFound: true }
+
+      if (ctx.params.forum.length >= 1) {
+        
+      }
+
+      return {
+        props: props
+      }
     }
   } catch {
     return { notFound: true }
   }
+
+  return { notFound: true }
 }

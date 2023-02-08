@@ -1,31 +1,31 @@
 
 interface User {
-  id: string,
+  id: number,
   name: string,
   email: string,
-  date_registered: Date | number,
+  dateRegistered: Date | number,
 }
 
 interface Forum {
-  id: string,
+  id: number,
   name: string,
-  description?: string,
-  date_created: Date | number,
+  description?: string | null,
+  dateCreated: Date | number,
   topics?: Topic[]
 }
 
 interface Topic {
-  id: string,
+  id: number,
   name: string,
-  description: string
+  description?: string | null
 }
 
 interface Post {
-  id: string,
+  id: number,
   content: string,
-  timestamp_posted: Date | number,
-  original_post?: Post,
-  reply_post?: Post
+  timestampPosted: Date | number,
+  originalPost?: Post,
+  replyPost?: Post
 }
 
 
