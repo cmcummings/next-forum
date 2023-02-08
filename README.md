@@ -1,9 +1,9 @@
 # warechat
 
 ## Stack
-- React.js (+MaterialUI)
+- React.js (+TailwindCSS)
 - Next.js (+NextAuth)
-- PostgresQL
+- PostgreSQL
 
 Written in TypeScript.
 
