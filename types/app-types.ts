@@ -1,7 +1,16 @@
+interface ParentProps {
+  children?: React.ReactNode | React.ReactNode[],
+  className?: string
+}
 
-interface User {
+/*  */
+
+interface BasicUser {
   id: number,
-  name: string,
+  name: string
+}
+
+interface User extends BasicUser {
   email: string,
   dateRegistered: Date | number,
 }
@@ -23,10 +32,10 @@ interface Topic {
 interface Post {
   id: number,
   content: string,
+  author: BasicUser,
   timestampPosted: Date | number,
-  originalPost?: Post,
   replyPost?: Post
 }
 
 
-export type { User, Forum, Topic, Post }
+export type { User, Forum, Topic, Post, ParentProps }

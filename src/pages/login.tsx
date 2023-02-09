@@ -1,6 +1,8 @@
 import { FormEvent, useState } from "react";
 import Head from "next/head";
 import { signIn } from "next-auth/react";
+import TextInput from "../components/generic/TextInput";
+import Button from "../components/generic/Button";
 
 export default function Login() {
 
@@ -26,12 +28,12 @@ export default function Login() {
   return (
     <>
       <Head>
-        <title>ware-chat/login</title>
+        <title>login - warechat</title>
       </Head>
       <form onSubmit={login}>
-        <input type="text" placeholder="Username" value={username} onChange={e => setUsername(e.target.value)} />
-        <input type="password" placeholder="Password" value={password} onChange={e => setPassword(e.target.value)}/>
-        <button type="submit">Submit</button>
+        <TextInput type="text" placeholder="Username" value={username} onChange={(e: FormEvent<HTMLInputElement>) => setUsername(e.currentTarget.value)} />
+        <TextInput type="password" placeholder="Password" value={password} onChange={(e: FormEvent<HTMLInputElement>) => setPassword(e.currentTarget.value)}/>
+        <Button type="submit">Submit</Button>
       </form>
     </>
   )

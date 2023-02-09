@@ -1,36 +1,23 @@
-import Topbar from "@/src/components/Topbar"
-import { getForum } from "@/src/db/database"
+import ForumHome from "@/src/components/forum/ForumHome"
+import Page from "@/src/components/generic/Page"
+import TopicPosts from "@/src/components/forum/TopicPosts"
+import { getForum, getTopicPosts } from "@/src/db/database"
 import { Forum, Post, Topic } from "@/types/app-types"
 import { GetServerSideProps, GetServerSidePropsContext } from "next"
 
-interface ForumProps {
+export interface ForumProps {
   forum: Forum,
   topic?: Topic,
-  post?: Post
+  posts?: Post[]
 }
 
-export default function ForumPage({ forum, topic, post }: ForumProps) {
+export default function ForumPage(forumProps: ForumProps) {
   return (
-    <>
-      <Topbar />
-      <div className="lg:mx-80 mt-10">
-        <h1 className="text-5xl mb-2">/{forum.name}/</h1>
-        <h3 className="text-xl">{forum.description}</h3>
-
-        <div className="mt-5 pt-5 border-t border-slate-500">
-          <h3 className="text-xl">Topics</h3>
-
-          <div className="mx-2">
-            {forum.topics?.map((topic: Topic) => (
-              <button key={topic.id} className="my-2 p-2 border border-slate-700 hover:border-slate-500 text-left w-full">
-                <p>{topic.name}</p>
-                <p>{topic.description}</p>
-              </button>
-            ))}
-          </div>
-        </div>
-      </div>
-    </>  
+    <Page>
+      {forumProps.topic 
+        ? <TopicPosts {...forumProps} /> 
+        : <ForumHome {...forumProps} />}
+    </Page>  
   )
 }
 
@@ -42,7 +29,7 @@ export const getServerSideProps: GetServerSideProps = async (ctx: GetServerSideP
     }
   }
 
-  // /f/[forumName]/[topicId]/[postId]
+  // Routing: /f/[forumName]/[topicId]/[postId]
 
   try {
     if(typeof ctx.params.forum !== 'string') {
@@ -51,16 +38,19 @@ export const getServerSideProps: GetServerSideProps = async (ctx: GetServerSideP
       const props: ForumProps = {
         forum: forum
       }
-
-      if (ctx.params.forum.length >= 1) {
-        
+      
+      if (ctx.params.forum.length >= 2) {
+        const topic = await getTopicPosts(forum.id, parseInt(ctx.params.forum[1]))
+        props.topic = topic.topic
+        props.posts = topic.posts
       }
 
       return {
         props: props
       }
     }
-  } catch {
+  } catch(err) {
+    console.log(err)
     return { notFound: true }
   }
 

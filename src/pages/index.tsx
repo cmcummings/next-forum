@@ -2,19 +2,19 @@ import Head from 'next/head'
 import { getServerSession } from 'next-auth'
 import { authOptions } from './api/auth/[...nextauth]'
 import { GetServerSideProps, GetServerSidePropsContext } from 'next'
-import { useState } from 'react'
-import Topbar from '../components/Topbar'
 import Home from '../components/Home'
+import Page from '../components/generic/Page'
 
 export default function Index() {
   return (
     <>
       <Head>
-        <title>ware</title>
+        <title>warechat</title>
       </Head>
       <main>
-        <Topbar />
-        <Home />
+        <Page>
+          <Home />
+        </Page>
       </main>
     </>
   )
