@@ -18,7 +18,10 @@ export const authOptions = {
 
         try {
           const user = await authorizeUser(credentials.username, credentials.password)
-          return user 
+          return {
+            ...user,
+            id: user.id.toString()
+          }
         } catch(err) {
           console.log(err)
         }

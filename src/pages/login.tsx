@@ -3,6 +3,10 @@ import Head from "next/head";
 import { signIn } from "next-auth/react";
 import TextInput from "../components/generic/TextInput";
 import Button from "../components/generic/Button";
+import Page from "../components/generic/Page";
+import PageContents from "../components/generic/PageContents";
+import Container from "../components/generic/Container";
+import Divider from "../components/generic/Divider";
 
 export default function Login() {
 
@@ -22,7 +26,7 @@ export default function Login() {
           console.log("Logged in!")
         }
       })
-    }
+    } 
   }
 
   return (
@@ -30,11 +34,28 @@ export default function Login() {
       <Head>
         <title>login - warechat</title>
       </Head>
-      <form onSubmit={login}>
-        <TextInput type="text" placeholder="Username" value={username} onChange={(e: FormEvent<HTMLInputElement>) => setUsername(e.currentTarget.value)} />
-        <TextInput type="password" placeholder="Password" value={password} onChange={(e: FormEvent<HTMLInputElement>) => setPassword(e.currentTarget.value)}/>
-        <Button type="submit">Submit</Button>
-      </form>
+      <Page>
+        <div className="mt-10 md:mx-auto lg:w-1/5">
+          <Container>
+            <h1 className="mb-2">Log in with a warechat account.</h1>
+            <Divider/>
+            <form onSubmit={login} className="flex flex-col gap-3">
+              <TextInput 
+                placeholder="Username" 
+                value={username} 
+                onChange={(e: FormEvent<HTMLInputElement>) => setUsername(e.currentTarget.value)} 
+                className="" />
+              <TextInput 
+                type="password" 
+                placeholder="Password" 
+                value={password} 
+                onChange={(e: FormEvent<HTMLInputElement>) => setPassword(e.currentTarget.value)} 
+                className="" />
+              <Button type="submit" className="grow-0 self-end">Log in</Button>
+            </form>
+          </Container>
+        </div>
+      </Page>
     </>
   )
 }

@@ -1,7 +1,7 @@
 import { Topic } from "@/types/app-types";
 import Head from "next/head";
 import { ForumProps } from "../../pages/f/[...forum]";
-
+import PageContents from "../generic/PageContents";
 
 export default function ForumHome({ forum }: ForumProps) {
   return (
@@ -9,7 +9,7 @@ export default function ForumHome({ forum }: ForumProps) {
       <Head>
         <title>{forum.name + " - warechat"}</title>
       </Head>
-      <div className="lg:mx-80 mt-10">
+      <PageContents>
         <h1 className="text-5xl mb-2">/{forum.name}/</h1>
         <h3 className="text-xl">{forum.description}</h3>
 
@@ -25,7 +25,7 @@ export default function ForumHome({ forum }: ForumProps) {
             ))}
           </div>
         </div>
-      </div>
+      </PageContents>
     </>
   )
 }

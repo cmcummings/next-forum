@@ -1,20 +1,26 @@
-import { ParentProps } from "@/types/app-types";
-import { ForumProps } from "@/src/pages/f/[...forum]";
+import { Forum, Topic } from "@/types/app-types";
+import Divider from "../generic/Divider";
+import Container from "../generic/Container"
 
-export default function ForumSidebarWrapper({ forum, topic, posts, children, className }: ForumProps & ParentProps) {
+export default function ForumSidebarWrapper({ forum, topic, children }: { forum: Forum, topic: Topic, children?: React.ReactNode | React.ReactNode[] }) {
   return (
-    <div className={className}>
+    <div className="lg:mx-44 mt-10">
       <div className="flex gap-x-2">
         <div className="flex-1 min-w-0">
           {children}
         </div>
         <div className="flex-none basis-80 hidden md:inline-block">
-          <div className="border border-slate-600 bg-slate-900 rounded-md p-5">
+          <Container className="p-5">
             <h1 className="text-4xl">{forum.name}</h1>
             <p className="break-words">{forum.description}</p>
-            <div className="border-t my-3 border-slate-600" />
-            <h3 className="text-xl">{topic?.name}</h3>
-          </div>
+            {topic 
+              ? <>
+                  <Divider />
+                  <h3 className="text-xl">{topic.name}</h3>
+                  <p className="break-words">{topic.description}</p>
+                </>
+              : <></>}
+          </Container>
         </div>
       </div>
     </div>

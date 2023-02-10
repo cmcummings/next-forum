@@ -1,6 +1,7 @@
 interface ParentProps {
   children?: React.ReactNode | React.ReactNode[],
-  className?: string
+  className?: string,
+  [key: string]: any,
 }
 
 /*  */
@@ -29,6 +30,12 @@ interface Topic {
   description?: string | null
 }
 
+interface Thread {
+  id: number,
+  title: string,
+  posts?: Post[] // list of posts in order of timestamPosted
+}
+
 interface Post {
   id: number,
   content: string,
@@ -38,4 +45,4 @@ interface Post {
 }
 
 
-export type { User, Forum, Topic, Post, ParentProps }
+export type { User, Forum, Topic, Post, Thread, ParentProps }

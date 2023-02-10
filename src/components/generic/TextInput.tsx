@@ -1,8 +1,11 @@
+import { ParentProps } from "@/types/app-types";
 
 
-export default function TextInput({ ...props }) {
-
+export default function TextInput({ className, ...props }: ParentProps) {
   return (
-    <input className="bg-transparent p-2 focus:outline outline-blue-300" {...props} />
+    <input 
+      type="text" 
+      className="focus:outline-none focus:ring-2 ring-inset ring-sky-500 rounded-lg bg-transparent p-3"
+      {...props} />
   )
 }

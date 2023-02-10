@@ -1,10 +1,13 @@
-import { Forum, Post, Topic, User } from "@/types/app-types";
-import type { forum, post, topic, users } from "@prisma/client";
+import { Forum, Post, Thread, Topic, User } from "@/types/app-types";
+import type { forum, post, thread, topic, users } from "@prisma/client";
 import { PrismaClient } from "@prisma/client";
+
+const bcrypt = require('bcrypt');
+const SALT_ROUNDS = 10;
 
 const prisma = new PrismaClient()
 
-function resolveForum(forum: forum & {topic: topic[]}): Forum {
+function resolveForum(forum: forum & { topic: topic[] }): Forum {
   return {
     id: forum.forum_id,
     name: forum.forum_name,
@@ -22,41 +25,91 @@ function resolveTopic(topic: topic): Topic {
   }
 }
 
-function resolvePost(post: post & {users: {user_id: number, user_name: string}}): Post {
+type PrismaPostWithUser = post & { users: { user_id: number, user_name: string } }
+
+function resolveThread(thread: thread & { post?: PrismaPostWithUser[] }): Thread {
+  let res: Thread = {
+    id: thread.thread_id,
+    title: thread.title,
+  }
+
+  if (thread.post) {
+    res.posts = thread.post.map(resolvePost)
+  }
+
+  return res
+}
+
+function resolvePost(post: PrismaPostWithUser): Post {
   return {
     id: post.post_id,
     content: post.content,
     author: {
       id: post.users.user_id,
-      name: post.users.user_name,
+      name: post.users.user_name
     },
     timestampPosted: post.timestamp_posted.valueOf()
   }
 }
 
-async function authorizeUser(username: string, password: string): Promise<User> {
+function resolveUser(user: users): User {
+  return {
+    id: user.user_id,
+    name: user.user_name,
+    email: user.email,
+    dateRegistered: user.date_registered.valueOf()
+  }
+}
+
+export async function registerUser(creds: { username: string, email: string, password: string }): Promise<boolean> {
   return new Promise((resolve, reject) => {
-    prisma.$queryRaw
-      `SELECT user_id, user_name, email, date_registered
-      FROM users 
-      WHERE user_name=${username} AND (SELECT password=crypt(${password},password) FROM users WHERE user_name=${username});`
-    .then(res => {
-      if (Array.isArray(res)) {
-        const row = res[0]
-        resolve({
-          id: row.user_id,
-          name: row.user_name,
-          email: row.email,
-          dateRegistered: row.date_registered
-        })
-      } else {
-        reject()
-      }
+    if (creds.password.length > 72) {
+      reject("Password is too long.")
+      return
+    }
+
+    bcrypt.hash(creds.password, SALT_ROUNDS).then((hashedPassword: string) => {
+      prisma.users.create({
+        data: {
+          user_name: creds.username,
+          email: creds.email,
+          password: hashedPassword
+        }
+      }).then((user: users) => {
+        if (user) {
+          resolve(true)
+        } else {
+          reject()
+        }
+      }).catch(reject)
     }).catch(reject)
   })
 }
 
-async function getForum(forumName: string): Promise<Forum> {
+export async function authorizeUser(username: string, password: string): Promise<User> {
+  return new Promise((resolve, reject) => {
+    prisma.users.findFirst({
+      where: {
+        user_name: username
+      }
+    }).then((user: users | null) => {
+      if (!user) {
+        reject("The user does not exist.")
+        return
+      }
+
+      bcrypt.compare(password, user.password).then((matches: boolean) => {
+        if (matches) {
+          resolve(resolveUser(user))
+        } else {
+          reject("Could not authorize user.")
+        }
+      })
+    })
+  })
+}
+
+export async function getForum(forumName: string): Promise<Forum> {
   return new Promise((resolve, reject) => {
     prisma.forum.findUnique({
       where: {
@@ -75,24 +128,31 @@ async function getForum(forumName: string): Promise<Forum> {
   })
 }
 
-interface TopicPosts {
-  topic: Topic,
-  posts: Post[]
-}
-
-async function getTopicPosts(forumId: number, topicId: number): Promise<TopicPosts> {
+export async function getTopic(topicId: number): Promise<Topic> {
   return new Promise((resolve, reject) => {
     prisma.topic.findUnique({
       where: {
         topic_id: topicId
       }
     }).then(topic => {
-      if (topic) {
-        prisma.post.findMany({
-          where: {
-            forum_id: forumId,
-            topic_id: topicId
-          },
+      if (!topic) {
+        reject("Topic not found.")
+        return
+      }
+
+      resolve(resolveTopic(topic))
+    })
+  })
+}
+
+export async function getTopicThreads(topicId: number): Promise<Thread[]> {
+  return new Promise((resolve, reject) => {
+    prisma.thread.findMany({
+      where: {
+        topic_id: topicId
+      },
+      include: {
+        post: {
           include: {
             users: {
               select: {
@@ -100,23 +160,49 @@ async function getTopicPosts(forumId: number, topicId: number): Promise<TopicPos
                 user_name: true
               }
             }
-          }
-        }).then(posts => {
-          if (posts) {
-            resolve({
-              topic: resolveTopic(topic),
-              posts: posts.map(resolvePost)
-            })
-          } else {
-            reject()
-          }
-        }).catch(reject)
-      } else {
-        reject()
-      }
+          },
+          orderBy: {
+            timestamp_posted: 'desc'
+          },
+          take: 1
+        }
+      },
+      take: 10
+    }).then(threads => {
+      resolve(threads.map(resolveThread))
     }).catch(reject)
   })
 }
 
-export type { TopicPosts }
-export { getForum, getTopicPosts, authorizeUser }
+export async function getThread(threadId: number): Promise<Thread> {
+  return new Promise((resolve, reject) => {
+    prisma.thread.findUnique({
+      where: {
+        thread_id: threadId
+      },
+      include: {
+        post: {
+          include: {
+            users: {
+              select: {
+                user_id: true,
+                user_name: true
+              }
+            }
+          },
+          orderBy: {
+            timestamp_posted: 'desc'
+          },
+          take: 10
+        },
+      }
+    }).then(thread => {
+      if(!thread) {
+        reject()
+        return
+      }
+
+      resolve(resolveThread(thread))
+    }).catch(reject)
+  })
+}

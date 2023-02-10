@@ -10,42 +10,63 @@ datasource db {
 }
 
 model forum {
-  forum_id          Int      @id @default(autoincrement())
-  forum_name        String   @unique(map: "unique_names") @db.VarChar(30)
+  forum_id          Int             @id @default(autoincrement())
+  forum_name        String          @unique @db.VarChar(30)
   forum_description String?
-  date_created      DateTime @default(dbgenerated("CURRENT_DATE")) @db.Date
+  private           Boolean?
+  date_created      DateTime        @default(dbgenerated("CURRENT_DATE")) @db.Date
+  thread            thread[]
   topic             topic[]
+  user_in_forum     user_in_forum[]
 }
 
 model post {
-  post_id                                Int      @id @default(autoincrement())
-  forum_id                               Int      @default(autoincrement())
-  topic_id                               Int      @default(autoincrement())
-  user_id                                Int      @default(autoincrement())
-  content                                String
-  timestamp_posted                       DateTime @default(now()) @db.Timestamp(6)
-  original_post_id                       Int      @default(autoincrement())
-  reply_post_id                          Int      @default(autoincrement())
-  post_post_original_post_idTopost       post     @relation("post_original_post_idTopost", fields: [original_post_id], references: [post_id], onDelete: NoAction, onUpdate: NoAction)
-  other_post_post_original_post_idTopost post[]   @relation("post_original_post_idTopost")
-  post_post_reply_post_idTopost          post     @relation("post_reply_post_idTopost", fields: [reply_post_id], references: [post_id], onDelete: NoAction, onUpdate: NoAction)
-  other_post_post_reply_post_idTopost    post[]   @relation("post_reply_post_idTopost")
-  users                                  users    @relation(fields: [user_id], references: [user_id], onDelete: NoAction, onUpdate: NoAction)
+  post_id          Int      @id @default(autoincrement())
+  thread_id        Int      @default(autoincrement())
+  user_id          Int      @default(autoincrement())
+  original_post    Boolean?
+  content          String
+  timestamp_posted DateTime @default(now()) @db.Timestamp(6)
+  thread           thread   @relation(fields: [thread_id], references: [thread_id], onDelete: NoAction, onUpdate: NoAction)
+  users            users    @relation(fields: [user_id], references: [user_id], onDelete: NoAction, onUpdate: NoAction)
 }
 
 model topic {
-  topic_id          Int     @id @default(autoincrement())
-  forum_id          Int     @default(autoincrement())
-  topic_name        String  @db.VarChar(50)
+  topic_id          Int      @id @default(autoincrement())
+  forum_id          Int      @default(autoincrement())
+  topic_name        String   @db.VarChar(50)
   topic_description String?
-  forum             forum   @relation(fields: [forum_id], references: [forum_id], onDelete: NoAction, onUpdate: NoAction)
+  thread            thread[]
+  forum             forum    @relation(fields: [forum_id], references: [forum_id], onDelete: NoAction, onUpdate: NoAction)
 }
 
 model users {
-  user_id         Int      @id @default(autoincrement())
-  user_name       String   @db.VarChar(30)
+  user_id         Int             @id @default(autoincrement())
+  user_name       String          @unique(map: "unique_name") @db.VarChar(30)
   password        String
-  email           String   @unique @db.VarChar(319)
-  date_registered DateTime @default(dbgenerated("CURRENT_DATE")) @db.Date
+  email           String          @db.VarChar(319)
+  date_registered DateTime        @default(dbgenerated("CURRENT_DATE")) @db.Date
   post            post[]
+  user_in_forum   user_in_forum[]
+}
+
+model thread {
+  thread_id Int    @id @default(autoincrement())
+  forum_id  Int    @default(autoincrement())
+  topic_id  Int    @default(autoincrement())
+  title     String @db.VarChar(300)
+  post      post[]
+  forum     forum  @relation(fields: [forum_id], references: [forum_id], onDelete: NoAction, onUpdate: NoAction)
+  topic     topic  @relation(fields: [topic_id], references: [topic_id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model user_in_forum {
+  user_id  Int      @default(autoincrement())
+  forum_id Int      @default(autoincrement())
+  rank     Int?     @db.SmallInt
+  follows  Boolean?
+  forum    forum    @relation(fields: [forum_id], references: [forum_id], onDelete: NoAction, onUpdate: NoAction)
+  users    users    @relation(fields: [user_id], references: [user_id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@id([user_id, forum_id])
 }
