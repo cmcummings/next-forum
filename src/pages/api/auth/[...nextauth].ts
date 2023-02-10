@@ -1,4 +1,4 @@
-import NextAuth, { User, Session } from "next-auth"
+import NextAuth, { User, Session, Account, Profile } from "next-auth"
 import CredentialsProvider from "next-auth/providers/credentials"
 import { authorizeUser } from "@/src/db/database"
 import { JWT } from "next-auth/jwt"
@@ -33,7 +33,14 @@ export const authOptions = {
 
   callbacks: {
     async session({ session, token, user }: {session: Session, token: JWT, user: User}): Promise<Session> {
+      if (session.user && token.sub) {
+        session.user.id = token.sub
+      }
       return session
+    },
+
+    async jwt({ token, user }: { token: JWT, user?: User }): Promise<JWT> {
+      return token
     }
   },
 

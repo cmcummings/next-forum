@@ -2,6 +2,8 @@ import { Topic } from "@/types/app-types";
 import Head from "next/head";
 import { ForumProps } from "../../pages/f/[...forum]";
 import PageContents from "../generic/PageContents";
+import Container from "../generic/Container";
+import Link from "next/link";
 
 export default function ForumHome({ forum }: ForumProps) {
   return (
@@ -14,14 +16,18 @@ export default function ForumHome({ forum }: ForumProps) {
         <h3 className="text-xl">{forum.description}</h3>
 
         <div className="mt-5 pt-5 border-t border-slate-500">
-          <h3 className="text-xl">Topics</h3>
+          <h3 className="text-2xl">Topics</h3>
 
-          <div className="mx-2">
+          <div className="">
             {forum.topics?.map((topic: Topic) => (
-              <button key={topic.id} className="my-2 p-2 border border-slate-700 hover:border-slate-500 text-left w-full">
-                <p>{topic.name}</p>
-                <p>{topic.description}</p>
-              </button>
+              <Link href={"/f/" + forum.name + "/" + topic.id}>
+                <Container 
+                  key={topic.id} 
+                  className="my-2 p-2 border hover:border-slate-500 hover:cursor-pointer text-left w-full" >
+                  <h3 className="text-xl">{topic.name}</h3>
+                  <p className="text-slate-400">{topic.description}</p>
+                </Container>
+              </Link>
             ))}
           </div>
         </div>

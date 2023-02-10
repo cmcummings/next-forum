@@ -133,7 +133,7 @@ export async function getTopic(topicId: number): Promise<Topic> {
     prisma.topic.findUnique({
       where: {
         topic_id: topicId
-      }
+      },
     }).then(topic => {
       if (!topic) {
         reject("Topic not found.")
@@ -161,8 +161,8 @@ export async function getTopicThreads(topicId: number): Promise<Thread[]> {
               }
             }
           },
-          orderBy: {
-            timestamp_posted: 'desc'
+          where: {
+            original_post: true
           },
           take: 1
         }
@@ -191,7 +191,7 @@ export async function getThread(threadId: number): Promise<Thread> {
             }
           },
           orderBy: {
-            timestamp_posted: 'desc'
+            timestamp_posted: 'asc'
           },
           take: 10
         },
@@ -203,6 +203,48 @@ export async function getThread(threadId: number): Promise<Thread> {
       }
 
       resolve(resolveThread(thread))
+    }).catch(reject)
+  })
+}
+
+export async function createReply(threadId: number, userId: number, content: string): Promise<boolean> {
+  return new Promise((resolve, reject) => {
+    prisma.post.create({
+      data: {
+        thread_id: threadId,
+        user_id: userId,
+        content: content
+      }
+    }).then((post: post) => {
+      if (post) {
+        resolve(true)
+      } else {
+        reject()
+      }
+    }).catch(reject)
+  })
+}
+
+export async function createThread(forumId: number, topicId: number, userId: number, title: string, content: string): Promise<boolean> {
+  return new Promise((resolve, reject) => {
+    prisma.thread.create({
+      data: {
+        forum_id: forumId,
+        topic_id: topicId,
+        title: title,
+        post: {
+          create: {
+            user_id: userId,
+            content: content
+          }
+        }
+      },
+    }).then((thread: thread) => {
+      if (thread) {
+        resolve(true)
+      } else {
+        reject()
+      }
     }).catch(reject)
   })
 }

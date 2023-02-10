@@ -18,7 +18,7 @@ export default function ThreadPreview({ id, title, posts, link }: Thread & { lin
 
   
   return (
-    <Container className="p-3 bg-slate-900 border-slate-900 hover:border-slate-600">
+    <Container className="p-3 bg-slate-900 hover:border-slate-500">
       <div className="flex justify-between content-center items-center">
         <div className="flex flex-1 self-start min-w-0 items-center">
           <IconButton className="inline" onClick={() => setExpanded(ex => !ex)}>

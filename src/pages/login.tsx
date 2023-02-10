@@ -36,7 +36,7 @@ export default function Login() {
       </Head>
       <Page>
         <div className="mt-10 md:mx-auto lg:w-1/5">
-          <Container>
+          <Container className="p-5">
             <h1 className="mb-2">Log in with a warechat account.</h1>
             <Divider/>
             <form onSubmit={login} className="flex flex-col gap-3">

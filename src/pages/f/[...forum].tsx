@@ -45,6 +45,8 @@ export const getServerSideProps: GetServerSideProps = async (ctx: GetServerSideP
 
       const topicId = parseInt(ctx.params.forum[1])
 
+      // TODO Possible to refactor these into just 2 queries
+
       if (ctx.params.forum.length >= 2) {
         // /f/[forumName]/[topicId]
         // /f/[forumName]/[topicId]/[threadId]

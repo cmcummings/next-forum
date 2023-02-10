@@ -13,13 +13,6 @@ export default function ForumSidebarWrapper({ forum, topic, children }: { forum:
           <Container className="p-5">
             <h1 className="text-4xl">{forum.name}</h1>
             <p className="break-words">{forum.description}</p>
-            {topic 
-              ? <>
-                  <Divider />
-                  <h3 className="text-xl">{topic.name}</h3>
-                  <p className="break-words">{topic.description}</p>
-                </>
-              : <></>}
           </Container>
         </div>
       </div>
