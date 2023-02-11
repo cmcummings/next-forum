@@ -1,3 +1,14 @@
+# About
+Warechat is a forum website.
+
+- A new user can sign up for a warechat account using their username, email, and password.
+- Users can create threads on forums and reply to existing threads.
+
+![Forum home page](screenshots/fdev.png)
+
+![Forum topic page](screenshots/fdev1.png)
+
+![Example thread](screenshots/fdev11.png)
 
 # Stack
 - React.js, TailwindCSS
