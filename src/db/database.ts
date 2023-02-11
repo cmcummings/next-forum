@@ -79,7 +79,7 @@ export async function registerUser(creds: { username: string, email: string, pas
         if (user) {
           resolve(true)
         } else {
-          reject()
+          reject("Could not register user.")
         }
       }).catch(reject)
     }).catch(reject)
@@ -147,29 +147,37 @@ export async function getTopic(topicId: number): Promise<Topic> {
 
 export async function getTopicThreads(topicId: number): Promise<Thread[]> {
   return new Promise((resolve, reject) => {
-    prisma.thread.findMany({
-      where: {
-        topic_id: topicId
-      },
+    prisma.post.findMany({
       include: {
-        post: {
-          include: {
-            users: {
-              select: {
-                user_id: true,
-                user_name: true
-              }
-            }
-          },
-          where: {
-            original_post: true
-          },
-          take: 1
+        thread: true,
+        users: true
+      },
+      where: {
+        original_post: true,
+        thread: {
+          topic_id: topicId
         }
       },
+      orderBy: {
+        timestamp_posted: 'desc'
+      },
       take: 10
-    }).then(threads => {
-      resolve(threads.map(resolveThread))
+    }).then(posts => {
+      resolve(posts.map(post => {
+        return {
+          id: post.thread.thread_id,
+          title: post.thread.title,
+          posts: [{
+            id: post.post_id,
+            content: post.content,
+            timestampPosted: post.timestamp_posted.valueOf(),
+            author: {
+              id: post.users.user_id,
+              name: post.users.user_name
+            }
+          }]
+        }
+      }))
     }).catch(reject)
   })
 }
@@ -213,7 +221,8 @@ export async function createReply(threadId: number, userId: number, content: str
       data: {
         thread_id: threadId,
         user_id: userId,
-        content: content
+        content: content,
+        original_post: false
       }
     }).then((post: post) => {
       if (post) {
@@ -225,7 +234,7 @@ export async function createReply(threadId: number, userId: number, content: str
   })
 }
 
-export async function createThread(forumId: number, topicId: number, userId: number, title: string, content: string): Promise<boolean> {
+export async function createThread(forumId: number, topicId: number, userId: number, title: string, content: string): Promise<number> {
   return new Promise((resolve, reject) => {
     prisma.thread.create({
       data: {
@@ -241,7 +250,7 @@ export async function createThread(forumId: number, topicId: number, userId: num
       },
     }).then((thread: thread) => {
       if (thread) {
-        resolve(true)
+        resolve(thread.thread_id)
       } else {
         reject()
       }

@@ -5,6 +5,7 @@ import IconButton from "../generic/IconButton";
 import TextLink from "../generic/TextLink";
 import Container from "../generic/Container";
 import AuthorLink from "./AuthorLink";
+import Link from "next/link";
 
 export default function ThreadPreview({ id, title, posts, link }: Thread & { link: string }) {
   if (!posts) {
@@ -24,7 +25,7 @@ export default function ThreadPreview({ id, title, posts, link }: Thread & { lin
           <IconButton className="inline" onClick={() => setExpanded(ex => !ex)}>
             <BarsArrowDownIcon className="h-5 w-5"/>
           </IconButton> 
-          <h3 className="ml-1 inline text-xl truncate"><a href={link}>{title}</a></h3>
+          <h3 className="ml-1 inline text-xl truncate"><Link href={link}>{title}</Link></h3>
         </div>
         <p className="flex-none self-end text-slate-400"><AuthorLink {...op.author} /> | {time.toDateString()}</p>
       </div>

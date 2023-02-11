@@ -10,32 +10,17 @@ import TextInput from "../generic/TextInput";
 import TextLink from "../generic/TextLink";
 import AuthorLink from "./AuthorLink";
 import ForumSidebarWrapper from "./ForumSidebarWrapper";
+import { replyRequest } from "@/src/client/requests";
+import TextArea from "../generic/TextArea";
+import { useRouter } from "next/router";
 
-async function replyRequest(threadId: number, content: string) {
-  return new Promise((resolve, reject) => {
-    fetch('/api/forum/reply', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        threadId: threadId,
-        content: content
-      })
-    }).then(res => {
-      if (res.status === 200) {
-        resolve(true)
-      } else {
-        reject()
-      }
-    }).catch(reject)
-  })
-}
 
 export default function Thread({ forum, topic, thread }: ForumProps) {
   if (!(thread && topic && thread.posts)) {
     return <></>
   }
+
+  const router = useRouter()
 
   const op = thread.posts[0]
 
@@ -46,7 +31,8 @@ export default function Thread({ forum, topic, thread }: ForumProps) {
     if (!replyContent || !thread) return
 
     replyRequest(thread.id, replyContent).then(() => {
-
+      router.push("/f/" + forum.name + "/" + topic?.id + "/" + thread.id)
+      setReplyContent("")
     }).catch(console.log)
   }
 
@@ -56,7 +42,7 @@ export default function Thread({ forum, topic, thread }: ForumProps) {
         <title>{forum.name + " - " + topic?.name + " - warechat"}</title>
       </Head>
       <ForumSidebarWrapper {...{forum, topic}}>
-        <TextLink href={"/f/" + forum.name}><ArrowLongLeftIcon className="w-5 h-5 inline"/> Back to {forum.name} / {topic.name}</TextLink>
+        <TextLink href={"/f/" + forum.name + "/" + topic.id}><ArrowLongLeftIcon className="w-5 h-5 inline"/> Back to {forum.name} / {topic.name}</TextLink>
         <div className="mt-2 flex flex-col gap-2">
           <Container className="p-3">
             <h1 className="text-3xl">{thread.title}</h1>
@@ -64,25 +50,25 @@ export default function Thread({ forum, topic, thread }: ForumProps) {
             <Divider />
             <p>{op.content}</p>
           </Container>
-          <Container className="p-3">
-            <form className="flex flex-col gap-3" onSubmit={reply}>
-              <textarea 
-                value={replyContent} 
-                onChange={(e: FormEvent<HTMLTextAreaElement>) => setReplyContent(e.currentTarget.value)} 
-                placeholder="Reply to thread..."
-                rows={3}
-                className="grow focus:outline-none ring-1 ring-slate-700 focus:ring-2 ring-inset focus:ring-sky-500 rounded-lg bg-transparent p-3" />
-              <Button className="self-start" type="submit">Reply</Button>
-            </form>
-          </Container>
           {
-            thread.posts.filter((v, i) => i >= 1).map((post: Post) => (
-              <Container className="p-3">
+            thread.posts.filter((v, i) => i >= 1).map((post: Post, idx) => (
+              <Container key={idx} className="p-3">
                 <h3 className="text-slate-400"><AuthorLink {...post.author} /> | {new Date(post.timestampPosted).toDateString()}</h3>
                 <p>{post.content}</p>
               </Container>
             ))
           }
+          <Container className="p-3">
+            <form className="flex flex-col gap-3" onSubmit={reply}>
+              <TextArea 
+                value={replyContent} 
+                onChange={(e: FormEvent<HTMLTextAreaElement>) => setReplyContent(e.currentTarget.value)} 
+                placeholder="Reply to thread..."
+                rows={3}
+                className="grow" />
+              <Button className="self-start" type="submit">Reply</Button>
+            </form>
+          </Container>
         </div>
       </ForumSidebarWrapper>
     </>

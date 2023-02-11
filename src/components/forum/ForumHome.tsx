@@ -20,9 +20,8 @@ export default function ForumHome({ forum }: ForumProps) {
 
           <div className="">
             {forum.topics?.map((topic: Topic) => (
-              <Link href={"/f/" + forum.name + "/" + topic.id}>
+              <Link key={topic.id} href={"/f/" + forum.name + "/" + topic.id}>
                 <Container 
-                  key={topic.id} 
                   className="my-2 p-2 border hover:border-slate-500 hover:cursor-pointer text-left w-full" >
                   <h3 className="text-xl">{topic.name}</h3>
                   <p className="text-slate-400">{topic.description}</p>

@@ -1,4 +1,5 @@
 import { useSession, signOut } from "next-auth/react"
+import Link from "next/link"
 import TextLink from "./TextLink"
 
 
@@ -25,7 +26,7 @@ export default function Topbar() {
   return (
     <div className="bg-slate-900 text-slate-200 px-5 lg:px-44 py-2 sticky top-0 grid grid-cols-3 w-screen">
       <div>
-        warechat
+        <Link href="/" className="hover:underline">warechat</Link>
       </div>
       <div className="text-center">
         

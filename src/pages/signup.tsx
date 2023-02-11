@@ -4,32 +4,17 @@ import { signIn } from "next-auth/react";
 import TextInput from "../components/generic/TextInput";
 import Button from "../components/generic/Button";
 import Page from "../components/generic/Page";
-import PageContents from "../components/generic/PageContents";
 import Container from "../components/generic/Container";
 import Divider from "../components/generic/Divider";
-
-async function signUpRequest(credentials: { username: string, email: string, password: string }): Promise<boolean> {
-  return new Promise((resolve, reject) => {
-    fetch("/api/signup", {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(credentials)
-    }).then(res => {
-      if (res.status === 200) {
-        resolve(true)
-      } else {
-        reject()
-      }
-    }).catch(reject)
-  })
-}
+import { signUpRequest } from "../client/requests";
+import TextLink from "../components/generic/TextLink";
 
 export default function Signup() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [email, setEmail] = useState("");
+
+  const [errorMsg, setErrorMsg] = useState();
 
   function signUp(e: FormEvent<HTMLFormElement>) {
     e.preventDefault()
@@ -43,11 +28,9 @@ export default function Signup() {
           username: username,
           password: password,
           callbackUrl: 'http://localhost:3000'
-        }).then(() => {
-          console.log("Signed in!")
         })
-      }).catch(() => {
-        console.log("Failed to sign up!")
+      }).catch(err => {
+        setErrorMsg(err)
       })
     }
   }
@@ -59,8 +42,8 @@ export default function Signup() {
       </Head>
       <Page>
         <div className="mt-10 md:mx-auto lg:w-1/5">
-          <Container>
-            <h1 className="mb-2">Register a warechat account.</h1>
+          <Container className="p-5"> 
+            <h1 className="mb-2">Register a warechat account or <TextLink href="/login">log in</TextLink>.</h1>
             <Divider />
             <form onSubmit={signUp} className="flex flex-col gap-3">
               <TextInput
@@ -68,17 +51,24 @@ export default function Signup() {
                 value={username}
                 onChange={(e: FormEvent<HTMLInputElement>) => setUsername(e.currentTarget.value)}
                 className="" />
+              <p className="text-slate-400 text-sm">Username must be less than 30 characters and must only contain alphanumeric characters or underscores.</p>
+
               <TextInput
                 placeholder="E-mail"
                 value={email}
                 onChange={(e: FormEvent<HTMLInputElement>) => setEmail(e.currentTarget.value)}
                 className="" />
+
               <TextInput
                 type="password"
                 placeholder="Password"
                 value={password}
                 onChange={(e: FormEvent<HTMLInputElement>) => setPassword(e.currentTarget.value)}
                 className="" />
+              <p className="text-slate-400 text-sm">Password must have at least eight characters, at least one letter, and at least one number</p>
+
+              <p className="text-red-300 text-sm">{errorMsg}</p>
+
               <Button type="submit" className="grow-0 self-end">Sign up</Button>
             </form>
           </Container>

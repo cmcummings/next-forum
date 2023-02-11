@@ -7,6 +7,7 @@ import Page from "../components/generic/Page";
 import PageContents from "../components/generic/PageContents";
 import Container from "../components/generic/Container";
 import Divider from "../components/generic/Divider";
+import TextLink from "../components/generic/TextLink";
 
 export default function Login() {
 
@@ -37,7 +38,7 @@ export default function Login() {
       <Page>
         <div className="mt-10 md:mx-auto lg:w-1/5">
           <Container className="p-5">
-            <h1 className="mb-2">Log in with a warechat account.</h1>
+            <h1 className="mb-2">Log in with a warechat account or <TextLink href="/signup">sign up</TextLink>.</h1>
             <Divider/>
             <form onSubmit={login} className="flex flex-col gap-3">
               <TextInput 
