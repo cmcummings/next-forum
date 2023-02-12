@@ -7,6 +7,7 @@ import { authOptions } from "../auth/[...nextauth]";
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== "POST" || !(req.body.forumId && req.body.topicId && req.body.title && req.body.content)) {
     res.status(400).json({ message: "Invalid arguments." })
+    return
   }
 
   const session = await getServerSession(req, res, authOptions)

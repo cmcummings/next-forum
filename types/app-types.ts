@@ -1,4 +1,4 @@
-interface ParentProps {
+export interface ParentProps {
   children?: React.ReactNode | React.ReactNode[],
   className?: string,
   [key: string]: any,
@@ -6,17 +6,22 @@ interface ParentProps {
 
 /*  */
 
-interface BasicUser {
+export interface UserForumDetails {
+  rank: number | null,
+  follows: boolean | null
+}
+
+export interface BasicUser {
   id: number,
   name: string
 }
 
-interface User extends BasicUser {
+export interface User extends BasicUser {
   email: string,
   dateRegistered: Date | number,
 }
 
-interface Forum {
+export interface Forum {
   id: number,
   name: string,
   description?: string | null,
@@ -24,25 +29,22 @@ interface Forum {
   topics?: Topic[]
 }
 
-interface Topic {
+export interface Topic {
   id: number,
   name: string,
   description?: string | null
 }
 
-interface Thread {
+export interface Thread {
   id: number,
   title: string,
   posts?: Post[] // list of posts in order of timestamPosted
 }
 
-interface Post {
+export interface Post {
   id: number,
   content: string,
   author: BasicUser,
   timestampPosted: Date | number,
   replyPost?: Post
 }
-
-
-export type { User, Forum, Topic, Post, Thread, ParentProps }

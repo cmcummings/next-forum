@@ -1,13 +1,16 @@
 import ForumHome from "@/src/components/forum/ForumHome"
 import Page from "@/src/components/generic/Page"
 import TopicThreads from "@/src/components/forum/TopicThreads"
-import { getForum, getThread, getTopic, getTopicThreads } from "@/src/db/database"
-import { Forum, Thread as IThread, Topic } from "@/types/app-types"
+import { getForum, getThread, getTopic, getTopicThreads, getUserForumDetails } from "@/src/db/database"
+import { Forum, Thread as IThread, Topic, UserForumDetails } from "@/types/app-types"
 import { GetServerSideProps, GetServerSidePropsContext } from "next"
 import Thread from "@/src/components/forum/Thread"
+import { getServerSession } from "next-auth"
+import { authOptions } from "../api/auth/[...nextauth]"
 
 export interface ForumProps {
   forum: Forum,
+  user?: UserForumDetails,
   topic?: Topic,
   thread?: IThread,
   threads?: IThread[]
@@ -37,10 +40,18 @@ export const getServerSideProps: GetServerSideProps = async (ctx: GetServerSideP
 
   try {
     if(typeof ctx.params.forum !== 'string') {
-      const forum = await getForum(ctx.params.forum[0])
+      const forumName = ctx.params.forum[0]
+      const forum = await getForum(forumName)
 
       const props: ForumProps = {
-        forum: forum
+        forum: forum,
+      }
+
+      const session = await getServerSession(ctx.req, ctx.res, authOptions)
+
+      if (session) {
+        const userDetails = await getUserForumDetails(forum.id, parseInt(session.user.id))
+        props.user = userDetails
       }
 
       const topicId = parseInt(ctx.params.forum[1])
@@ -70,7 +81,6 @@ export const getServerSideProps: GetServerSideProps = async (ctx: GetServerSideP
       }
     }
   } catch(err) {
-    console.log(err)
     return { notFound: true }
   }
 

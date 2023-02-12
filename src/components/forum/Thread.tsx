@@ -6,32 +6,36 @@ import { FormEvent, useState } from "react";
 import Button from "../generic/Button";
 import Container from "../generic/Container";
 import Divider from "../generic/Divider";
-import TextInput from "../generic/TextInput";
 import TextLink from "../generic/TextLink";
 import AuthorLink from "./AuthorLink";
 import ForumSidebarWrapper from "./ForumSidebarWrapper";
-import { replyRequest } from "@/src/client/requests";
+import { canDelete, replyRequest } from "@/src/client/requests";
 import TextArea from "../generic/TextArea";
 import { useRouter } from "next/router";
+import DeletePostLink from "./DeletePostLink";
+import { useSession } from "next-auth/react";
 
 
-export default function Thread({ forum, topic, thread }: ForumProps) {
+export default function Thread({ forum, topic, thread, user }: ForumProps) {
   if (!(thread && topic && thread.posts)) {
     return <></>
   }
 
+  const session = useSession()
   const router = useRouter()
 
   const op = thread.posts[0]
 
   const [replyContent, setReplyContent] = useState("")
 
+  const linkToHere = "/f/" + forum.name + "/" + topic?.id + "/" + thread.id
+
   function reply(e: FormEvent<HTMLFormElement>) {
     e.preventDefault()
     if (!replyContent || !thread) return
 
     replyRequest(thread.id, replyContent).then(() => {
-      router.push("/f/" + forum.name + "/" + topic?.id + "/" + thread.id)
+      router.push(linkToHere)
       setReplyContent("")
     }).catch(console.log)
   }
@@ -44,17 +48,23 @@ export default function Thread({ forum, topic, thread }: ForumProps) {
       <ForumSidebarWrapper {...{forum, topic}}>
         <TextLink href={"/f/" + forum.name + "/" + topic.id}><ArrowLongLeftIcon className="w-5 h-5 inline"/> Back to {forum.name} / {topic.name}</TextLink>
         <div className="mt-2 flex flex-col gap-2">
-          <Container className="p-3">
+          <Container className="relative p-3 group">
             <h1 className="text-3xl">{thread.title}</h1>
             <h3 className="text-xl text-slate-400"><AuthorLink {...op.author} /> | {new Date(op.timestampPosted).toDateString()}</h3>
+            {canDelete(session.data, op, user)
+              ? <DeletePostLink className="absolute top-3 right-3 invisible group-hover:visible" postId={op.id} redirectLink={"/f/" + forum.name + "/" + topic?.id} />
+              : <></>}
             <Divider />
             <p>{op.content}</p>
           </Container>
           {
             thread.posts.filter((v, i) => i >= 1).map((post: Post, idx) => (
-              <Container key={idx} className="p-3">
+              <Container key={idx} className="relative p-3 group">
                 <h3 className="text-slate-400"><AuthorLink {...post.author} /> | {new Date(post.timestampPosted).toDateString()}</h3>
                 <p>{post.content}</p>
+                {canDelete(session.data, op, user)
+                  ? <DeletePostLink className="absolute top-3 right-3 invisible group-hover:visible" postId={post.id} redirectLink={linkToHere} />
+                  : <></>}
               </Container>
             ))
           }

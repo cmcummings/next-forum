@@ -14,7 +14,7 @@ import { FormEvent, useState } from "react";
 import { createThreadRequest } from "@/src/client/requests";
 import { useRouter } from "next/router";
 
-export default function TopicPosts({ forum, topic, threads }: ForumProps) {    
+export default function TopicPosts({ forum, topic, threads, user }: ForumProps) {    
   if (!topic) {
     return <div></div>
   }
@@ -76,7 +76,7 @@ export default function TopicPosts({ forum, topic, threads }: ForumProps) {
             ? threads.map((thread: Thread, idx: number) => (
                 <ThreadPreview 
                   link={"/f/" + forum.name + "/" + topic.id + "/" + thread.id} 
-                  key={idx} {...thread} />
+                  key={idx} {...{ forum, topic, thread, user }} />
               ))
             : <div>No threads were found on this topic.</div>
           }

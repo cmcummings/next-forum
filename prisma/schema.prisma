@@ -13,7 +13,7 @@ model forum {
   forum_id          Int             @id @default(autoincrement())
   forum_name        String          @unique @db.VarChar(30)
   forum_description String?
-  private           Boolean?
+  private           Boolean?        @default(false)
   date_created      DateTime        @default(dbgenerated("CURRENT_DATE")) @db.Date
   thread            thread[]
   topic             topic[]
@@ -24,7 +24,7 @@ model post {
   post_id          Int      @id @default(autoincrement())
   thread_id        Int      @default(autoincrement())
   user_id          Int      @default(autoincrement())
-  original_post    Boolean?
+  original_post    Boolean? @default(true)
   content          String
   timestamp_posted DateTime @default(now()) @db.Timestamp(6)
   thread           thread   @relation(fields: [thread_id], references: [thread_id], onDelete: NoAction, onUpdate: NoAction)
@@ -61,12 +61,12 @@ model thread {
 }
 
 model user_in_forum {
-  user_id  Int      @default(autoincrement())
-  forum_id Int      @default(autoincrement())
-  rank     Int?     @db.SmallInt
-  follows  Boolean?
-  forum    forum    @relation(fields: [forum_id], references: [forum_id], onDelete: NoAction, onUpdate: NoAction)
-  users    users    @relation(fields: [user_id], references: [user_id], onDelete: NoAction, onUpdate: NoAction)
+  user_id  Int     @default(autoincrement())
+  forum_id Int     @default(autoincrement())
+  rank     Int     @default(0) @db.SmallInt
+  follows  Boolean @default(false)
+  forum    forum   @relation(fields: [forum_id], references: [forum_id], onDelete: NoAction, onUpdate: NoAction)
+  users    users   @relation(fields: [user_id], references: [user_id], onDelete: NoAction, onUpdate: NoAction)
 
   @@id([user_id, forum_id])
 }

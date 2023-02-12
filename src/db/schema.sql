@@ -30,11 +30,11 @@ CREATE TABLE Forum (
 CREATE TABLE User_In_Forum (
     user_id SERIAL,
     forum_id SERIAL,
-    rank SMALLINT, 
-    follows BOOLEAN, -- True = follows
+    rank SMALLINT DEFAULT 0, 
+    follows BOOLEAN DEFAULT FALSE, -- True = follows
     PRIMARY KEY (user_id, forum_id),
-    FOREIGN KEY (user_id) REFERENCES Users(user_id),
-    FOREIGN KEY (forum_id) REFERENCES Forum(forum_id)
+    FOREIGN KEY (user_id) REFERENCES Users(user_id) ON DELETE CASCADE,
+    FOREIGN KEY (forum_id) REFERENCES Forum(forum_id) ON DELETE CASCADE
 );
 
 CREATE TABLE Topic (
@@ -43,7 +43,7 @@ CREATE TABLE Topic (
     topic_name VARCHAR(50) NOT NULL,
     topic_description TEXT,
     PRIMARY KEY (topic_id),
-    FOREIGN KEY (forum_id) REFERENCES Forum(forum_id)
+    FOREIGN KEY (forum_id) REFERENCES Forum(forum_id) ON DELETE CASCADE
 );
 
 CREATE TABLE Thread (
@@ -52,8 +52,8 @@ CREATE TABLE Thread (
     topic_id SERIAL,
     title VARCHAR(300) NOT NULL,
     PRIMARY KEY (thread_id),
-    FOREIGN KEY (forum_id) REFERENCES Forum(forum_id),
-    FOREIGN KEY (topic_id) REFERENCES Topic(topic_id)
+    FOREIGN KEY (forum_id) REFERENCES Forum(forum_id) ON DELETE CASCADE,
+    FOREIGN KEY (topic_id) REFERENCES Topic(topic_id) ON DELETE CASCADE
 );
 
 CREATE TABLE Post (
@@ -64,6 +64,6 @@ CREATE TABLE Post (
     content TEXT NOT NULL,
     timestamp_posted TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
     PRIMARY KEY (post_id),
-    FOREIGN KEY (user_id) REFERENCES Users(user_id),
-    FOREIGN KEY (thread_id) REFERENCES Thread(thread_id)
+    FOREIGN KEY (user_id) REFERENCES Users(user_id) ON DELETE CASCADE, 
+    FOREIGN KEY (thread_id) REFERENCES Thread(thread_id) ON DELETE CASCADE
 );

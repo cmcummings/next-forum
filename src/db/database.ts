@@ -1,5 +1,5 @@
-import { Forum, Post, Thread, Topic, User } from "@/types/app-types";
-import type { forum, post, thread, topic, users } from "@prisma/client";
+import { Forum, Post, Thread, Topic, User, UserForumDetails } from "@/types/app-types";
+import type { forum, post, thread, topic, users, user_in_forum } from "@prisma/client";
 import { PrismaClient } from "@prisma/client";
 
 const bcrypt = require('bcrypt');
@@ -253,6 +253,100 @@ export async function createThread(forumId: number, topicId: number, userId: num
         resolve(thread.thread_id)
       } else {
         reject()
+      }
+    }).catch(reject)
+  })
+}
+
+export async function getUserForumDetails(forumId: number, userId: number): Promise<UserForumDetails> {
+  return new Promise((resolve, reject) => {
+    prisma.user_in_forum.findUnique({
+      where: {
+        user_id_forum_id: {
+          user_id: userId,
+          forum_id: forumId
+        }
+      }
+    }).then((userDetails: user_in_forum | null) => {
+      if (userDetails) {
+        resolve({
+          rank: userDetails.rank,
+          follows: userDetails.follows
+        })
+      } else {
+        resolve({
+          rank: null,
+          follows: null
+        })
+      }
+    }).catch(reject)
+  })
+}
+
+export async function userHasPermissionToDeletePost(userId: number, postId: number): Promise<boolean> {
+  return new Promise((resolve, reject) => {
+    prisma.post.findUnique({
+      where: {
+        post_id: postId,
+      },
+      include: {
+        thread: true
+      }
+    }).then(post => {
+      if (post) {
+        if (post.user_id === userId) {
+          resolve(true)
+        } else {
+          prisma.user_in_forum.findUnique({
+            where: {
+              user_id_forum_id: {
+                user_id: userId,
+                forum_id: post.thread.forum_id
+              }
+            }
+          }).then(userDetails => {
+            if (userDetails && userDetails.rank && userDetails.rank >= 200) {
+              resolve(true)
+            } else {
+              resolve(false)
+            }
+          })
+        }
+      } else {
+        reject("Post could not be found.")
+      }
+    }).catch(reject)
+  })
+}
+
+export async function deletePost(postId: number): Promise<boolean> {
+  return new Promise((resolve, reject) => {
+    prisma.post.findUnique({
+      where: {
+        post_id: postId
+      }
+    }).then(post => {
+      if (post) {
+        if (post.original_post) {
+          console.log("Deleting thread")
+          prisma.thread.delete({
+            where: {
+              thread_id: post.thread_id
+            }
+          }).then(() => {
+            resolve(true)
+          }).catch(reject)
+        } else {
+          prisma.post.delete({
+            where: {
+              post_id: postId
+            },
+          }).then(() => {
+            resolve(true)
+          }).catch(reject)
+        }
+      } else {
+        reject("Post could not be found.")
       }
     }).catch(reject)
   })

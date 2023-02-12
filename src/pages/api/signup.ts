@@ -25,6 +25,7 @@ export default async function handler(req: NextApiRequest & {body: {username: st
 
   if(!password.match(passwordRegex)) {
     res.status(400).json({ message: "Password is invalid." })
+    return
   }
 
   try {
