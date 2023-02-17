@@ -1,8 +1,7 @@
 import { Topic } from "@/types/app-types";
 import Head from "next/head";
 import { ForumProps } from "../../pages/f/[...forum]";
-import PageContents from "../generic/PageContents";
-import Container from "../generic/Container";
+import { PageContents, Container } from "../common";
 import Link from "next/link";
 
 export default function ForumHome({ forum }: ForumProps) {

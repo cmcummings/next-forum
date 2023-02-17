@@ -1,13 +1,8 @@
 import { FormEvent, useState } from "react";
 import Head from "next/head";
 import { signIn } from "next-auth/react";
-import TextInput from "../components/generic/TextInput";
-import Button from "../components/generic/Button";
-import Page from "../components/generic/Page";
-import Container from "../components/generic/Container";
-import Divider from "../components/generic/Divider";
+import { Page, Container, Divider, TextInput, TextLink, Button } from "../components/common";
 import { signUpRequest } from "../client/requests";
-import TextLink from "../components/generic/TextLink";
 
 export default function Signup() {
   const [username, setUsername] = useState("");

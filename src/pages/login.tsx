@@ -1,13 +1,7 @@
 import { FormEvent, useState } from "react";
 import Head from "next/head";
 import { signIn } from "next-auth/react";
-import TextInput from "../components/generic/TextInput";
-import Button from "../components/generic/Button";
-import Page from "../components/generic/Page";
-import PageContents from "../components/generic/PageContents";
-import Container from "../components/generic/Container";
-import Divider from "../components/generic/Divider";
-import TextLink from "../components/generic/TextLink";
+import { Page, Container, Divider, TextLink, TextInput, Button } from "../components/common";
 
 export default function Login() {
 

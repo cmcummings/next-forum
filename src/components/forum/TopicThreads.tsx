@@ -1,15 +1,10 @@
+import { TextLink, Button, Modal, TextInput, Divider, TextArea } from "../common";
 import { Thread } from "@/types/app-types";
 import Head from "next/head";
 import { ForumProps } from "@/src/pages/f/[...forum]";
 import ForumSidebarWrapper from "./ForumSidebarWrapper";
 import ThreadPreview from "./ThreadPreview";
-import Divider from "../generic/Divider";
-import TextLink from "../generic/TextLink";
 import { ArrowLongLeftIcon } from "@heroicons/react/24/outline";
-import Button from "../generic/Button";
-import Modal from "../generic/Modal";
-import TextInput from "../generic/TextInput";
-import TextArea from "../generic/TextArea";
 import { FormEvent, useState } from "react";
 import { createThreadRequest } from "@/src/client/requests";
 import { useRouter } from "next/router";

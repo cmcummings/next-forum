@@ -3,7 +3,7 @@ import { getServerSession } from 'next-auth'
 import { authOptions } from './api/auth/[...nextauth]'
 import { GetServerSideProps, GetServerSidePropsContext } from 'next'
 import Home from '../components/Home'
-import Page from '../components/generic/Page'
+import { Page } from '../components/common'
 
 export default function Index() {
   return (

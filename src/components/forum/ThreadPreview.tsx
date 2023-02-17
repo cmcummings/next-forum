@@ -1,8 +1,6 @@
 import { BarsArrowDownIcon, ArrowLongRightIcon } from "@heroicons/react/24/outline"
 import { useState } from "react";
-import IconButton from "../generic/IconButton";
-import TextLink from "../generic/TextLink";
-import Container from "../generic/Container";
+import { IconButton, TextLink, Container } from "../common";
 import AuthorLink from "./AuthorLink";
 import Link from "next/link";
 import { canDelete, deleteRequest } from "@/src/client/requests";

@@ -3,14 +3,10 @@ import { Post } from "@/types/app-types";
 import { ArrowLongLeftIcon } from "@heroicons/react/24/outline";
 import Head from "next/head";
 import { FormEvent, useState } from "react";
-import Button from "../generic/Button";
-import Container from "../generic/Container";
-import Divider from "../generic/Divider";
-import TextLink from "../generic/TextLink";
+import { Button, TextLink, Container, Divider, TextArea } from '../common'
 import AuthorLink from "./AuthorLink";
 import ForumSidebarWrapper from "./ForumSidebarWrapper";
 import { canDelete, replyRequest } from "@/src/client/requests";
-import TextArea from "../generic/TextArea";
 import { useRouter } from "next/router";
 import DeletePostLink from "./DeletePostLink";
 import { useSession } from "next-auth/react";

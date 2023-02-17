@@ -1,5 +1,5 @@
 import ForumHome from "@/src/components/forum/ForumHome"
-import Page from "@/src/components/generic/Page"
+import { Page } from "@/src/components/common"
 import TopicThreads from "@/src/components/forum/TopicThreads"
 import { getForum, getThread, getTopic, getTopicThreads, getUserForumDetails } from "@/src/db/database"
 import { Forum, Thread as IThread, Topic, UserForumDetails } from "@/types/app-types"

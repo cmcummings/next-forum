@@ -1,6 +1,5 @@
 import { Forum, Topic } from "@/types/app-types";
-import Divider from "../generic/Divider";
-import Container from "../generic/Container"
+import { Divider, Container } from "../common";
 
 export default function ForumSidebarWrapper({ forum, topic, children }: { forum: Forum, topic: Topic, children?: React.ReactNode | React.ReactNode[] }) {
   return (
