@@ -351,3 +351,29 @@ export async function deletePost(postId: number): Promise<boolean> {
     }).catch(reject)
   })
 }
+
+export async function userFollowForum(userId: number, forumId: number, follow: boolean): Promise<boolean> {
+  return new Promise((resolve, reject) => {
+    prisma.user_in_forum.upsert({
+      where: {
+        user_id_forum_id: {
+          user_id: userId,
+          forum_id: forumId
+        }
+      },
+      update: {
+        follows: follow
+      },
+      create: {
+        user_id: userId,
+        forum_id: forumId,
+        follows: follow
+      },
+      select: {
+        follows: true
+      }
+    }).then(user => {
+      resolve(user.follows)
+    }).catch(reject)
+  })
+}

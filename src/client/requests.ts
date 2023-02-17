@@ -95,3 +95,26 @@ export async function signUpRequest(credentials: { username: string, email: stri
     }).catch(reject)
   })
 }
+
+export async function followRequest(forumId: number, follow: boolean): Promise<boolean> {
+  return new Promise((resolve, reject) => {
+    fetch("/api/forum/follow", {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        forumId: forumId,
+        follow: follow
+      })
+    }).then(res => {
+      if (res.status === 200) {
+        res.json().then(body => {
+          resolve(body.following)
+        }).catch(reject)
+      } else {
+        reject()
+      }
+    }).catch(reject)
+  })
+}

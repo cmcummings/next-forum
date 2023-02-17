@@ -7,7 +7,7 @@ import { authOptions } from "../auth/[...nextauth]";
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method === "DELETE") {
     if (!req.body.postId) {
-      res.status(400).json({ message: "Invalid arguments. "})
+      res.status(400).json({ message: "Invalid arguments."})
       return
     }
 
