@@ -3,9 +3,8 @@ import { useState } from "react";
 import { IconButton, TextLink, Container } from "../common";
 import AuthorLink from "./AuthorLink";
 import Link from "next/link";
-import { canDelete, deleteRequest } from "@/src/client/requests";
+import { canDelete } from "@/src/client/requests";
 import { ForumProps } from "@/src/pages/f/[...forum]";
-import { useRouter } from "next/router";
 import DeletePostLink from "./DeletePostLink";
 import { useSession } from "next-auth/react";
 

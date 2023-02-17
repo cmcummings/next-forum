@@ -61,6 +61,22 @@ function resolveUser(user: users): User {
   }
 }
 
+function resolveThreadFromPost(post: post & { thread: thread, users: users }): Thread {
+  return {
+    id: post.thread.thread_id,
+    title: post.thread.title,
+    posts: [{
+      id: post.post_id,
+      content: post.content,
+      timestampPosted: post.timestamp_posted.valueOf(),
+      author: {
+        id: post.users.user_id,
+        name: post.users.user_name
+      }
+    }]
+  }
+}
+
 export async function registerUser(creds: { username: string, email: string, password: string }): Promise<boolean> {
   return new Promise((resolve, reject) => {
     if (creds.password.length > 72) {
@@ -163,21 +179,7 @@ export async function getTopicThreads(topicId: number): Promise<Thread[]> {
       },
       take: 10
     }).then(posts => {
-      resolve(posts.map(post => {
-        return {
-          id: post.thread.thread_id,
-          title: post.thread.title,
-          posts: [{
-            id: post.post_id,
-            content: post.content,
-            timestampPosted: post.timestamp_posted.valueOf(),
-            author: {
-              id: post.users.user_id,
-              name: post.users.user_name
-            }
-          }]
-        }
-      }))
+      resolve(posts.map(resolveThreadFromPost))
     }).catch(reject)
   })
 }
@@ -205,7 +207,7 @@ export async function getThread(threadId: number): Promise<Thread> {
         },
       }
     }).then(thread => {
-      if(!thread) {
+      if (!thread) {
         reject()
         return
       }
@@ -374,6 +376,50 @@ export async function userFollowForum(userId: number, forumId: number, follow: b
       }
     }).then(user => {
       resolve(user.follows)
+    }).catch(reject)
+  })
+}
+
+export async function getThreadsFromFollowedForums(userId: number): Promise<{ thread: Thread }[]> {
+  return new Promise((resolve, reject) => {
+    prisma.post.findMany({
+      include: {
+        thread: {
+          include: {
+            forum: true,
+            topic: true
+          },
+        },
+        users: true,
+      },
+      where: {
+        original_post: true,
+        thread: {
+          forum: {
+            user_in_forum: {
+              some: {
+                user_id: userId,
+                follows: true
+              }
+            }
+          }
+        }
+      },
+      orderBy: {
+        timestamp_posted: 'desc'
+      },
+      take: 10
+    }).then(posts => {
+      resolve(posts.map(post => ({
+        thread: resolveThreadFromPost(post),
+        forum: {
+          id: post.thread.forum.forum_id,
+          name: post.thread.forum.forum_name
+        },
+        topic: {
+          id: post.thread.topic.topic_id
+        }
+      })))
     }).catch(reject)
   })
 }

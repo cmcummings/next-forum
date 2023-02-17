@@ -4,8 +4,11 @@ import { authOptions } from './api/auth/[...nextauth]'
 import { GetServerSideProps, GetServerSidePropsContext } from 'next'
 import Home from '../components/Home'
 import { Page } from '../components/common'
+import { getThreadsFromFollowedForums } from '../db/database'
+import { Thread } from '@/types/app-types'
+import { ForumProps } from './f/[...forum]'
 
-export default function Index() {
+export default function Index({ followedThreads }: { followedThreads: ForumProps[] }) {
   return (
     <>
       <Head>
@@ -13,7 +16,7 @@ export default function Index() {
       </Head>
       <main>
         <Page>
-          <Home />
+          <Home followedThreads={followedThreads} />
         </Page>
       </main>
     </>
@@ -32,7 +35,16 @@ export const getServerSideProps: GetServerSideProps = async (ctx: GetServerSideP
     }
   }
 
-  return {
-    props: {}
+  try {
+    const userId = parseInt(session.user.id)
+    const followedThreads = await getThreadsFromFollowedForums(userId)
+    console.log(followedThreads)
+    return {
+      props: {
+        followedThreads: followedThreads
+      }
+    }
+  } catch {
+    return { notFound: true }
   }
 }

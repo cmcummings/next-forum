@@ -4,6 +4,7 @@ Warechat is a forum website.
 - A new user can sign up for a warechat account using their username, email, and password.
 - Users can create threads on forums and reply to existing threads.
 - Authors of posts and forum moderators can delete posts.
+- Users can follow forums and see the latest threads from followed forums on their home page.
 
 ![Forum home page](screenshots/fdev.png)
 
